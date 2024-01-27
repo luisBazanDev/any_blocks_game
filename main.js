@@ -1,15 +1,21 @@
-const MAX_WIDTH = 1000;
-const MAX_HEIGHT = 1000;
+const config = {
+  canvas_width: 1000,
+  canvas_height: 1000,
+  defaultVelocity: 0.06,
+};
+
+const MAX_WIDTH = config.canvas_width;
+const MAX_HEIGHT = config.canvas_height;
 const BASE_FILL = "rgb(200, 200, 200)";
 const MOUSE_FILL = "rgb(255,0,0)";
-const start = new Date().getTime();
+var start = new Date().getTime();
 const MOUSE = {
   x: MAX_WIDTH / 2,
   y: MAX_HEIGHT / 2,
   size: 20,
   collision: false,
 };
-var velocityFactor = 0.06;
+var velocityFactor = config.defaultVelocity;
 
 const canvas = document.getElementById("canvas");
 const cursorCanvas = document.getElementById("cursor");
@@ -131,7 +137,7 @@ class CollisionBlock {
   }
 }
 
-const blocks = [];
+var blocks = [];
 
 clearCanvas(canvas);
 
@@ -206,8 +212,24 @@ setInterval(() => {
   const seconds = Math.floor(diferences / 1000);
   const minutes = Math.floor(seconds / 60);
   velocityFactor = diferences / (1000 * 100); // 100 seconds
-  console.log(velocityFactor);
   if (!MOUSE.collision) {
     time.innerHTML = `${minutes}m ${seconds % 60}s ${diferences % 1000}ms`;
+  } else if (!time.innerHTML.endsWith("restart!")) {
+    time.innerHTML += " Click to restart!";
   }
 }, 1000 / 60);
+
+cursorCanvas.addEventListener("click", () => {
+  if (MOUSE.collision) {
+    resetGame();
+  }
+});
+
+function resetGame() {
+  start = Date.now();
+  velocityFactor = config.defaultVelocity;
+  MOUSE.collision = false;
+  requestAnimationFrame(render);
+  blocks = [];
+  clearCanvas(canvas);
+}
