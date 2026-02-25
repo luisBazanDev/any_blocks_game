@@ -37,7 +37,7 @@ function renderMouse() {
     MOUSE.x - MOUSE.size / 2,
     MOUSE.y - MOUSE.size / 2,
     MOUSE.size,
-    MOUSE.size
+    MOUSE.size,
   );
 }
 
@@ -81,9 +81,10 @@ class VelocityVector {
     this.module = getRandomNumber(2, 2 + 15 * velocityFactor); // 0.00 - 10.00 units
   }
 
-  calculeNewPosition(x, y) {
-    const newX = x + this.module * Math.cos((this.yaw * Math.PI) / 180);
-    const newY = y + this.module * Math.sin((this.yaw * Math.PI) / 180);
+  // ← CAMBIO: recibe dt para escalar el movimiento
+  calculeNewPosition(x, y, dt) {
+    const newX = x + this.module * Math.cos((this.yaw * Math.PI) / 180) * dt;
+    const newY = y + this.module * Math.sin((this.yaw * Math.PI) / 180) * dt;
     return { x: Math.floor(newX), y: Math.floor(newY) };
   }
 }
@@ -111,11 +112,12 @@ class CollisionBlock {
     context.fillRect(drawX, drawY, this.size, this.size);
   }
 
-  nextFrame() {
-    let newPos = this.velocity.calculeNewPosition(this.x, this.y);
+  // ← CAMBIO: recibe dt para escalar movimiento y crecimiento
+  nextFrame(dt) {
+    let newPos = this.velocity.calculeNewPosition(this.x, this.y, dt);
     this.x = newPos.x;
     this.y = newPos.y;
-    if (this.size < this.maxSize) this.size += 2;
+    if (this.size < this.maxSize) this.size += 2 * dt;
   }
 
   isOut() {
@@ -141,13 +143,24 @@ var blocks = [];
 
 clearCanvas(canvas);
 
-function render() {
+// ← CAMBIO: variable para trackear el timestamp del frame anterior
+let lastTimestamp = null;
+
+// ← CAMBIO: render ahora recibe el timestamp de requestAnimationFrame
+function render(timestamp) {
+  // Calcular delta time en ms; primer frame asume 16.67ms (60fps)
+  const deltaMs = lastTimestamp ? timestamp - lastTimestamp : 16.67;
+  lastTimestamp = timestamp;
+
+  // Normalizar a factor 1.0 = 60fps
+  const dt = deltaMs / 16.67;
+
   // Render collision blocks logic
   for (let index = 0; index < blocks.length; index++) {
     const collisionBlock = blocks[index];
     collisionBlock.drawInCanvas(canvas, BASE_FILL);
     if (isCollision(collisionBlock)) break;
-    collisionBlock.nextFrame();
+    collisionBlock.nextFrame(dt); // ← CAMBIO: pasar dt
     if (collisionBlock.isOut())
       blocks.splice(blocks.indexOf(collisionBlock), 1);
   }
@@ -172,7 +185,8 @@ function render() {
   }
 }
 
-render();
+// ← CAMBIO: arrancar con requestAnimationFrame para recibir el timestamp
+requestAnimationFrame(render);
 
 cursorCanvas.addEventListener("mousemove", function (event) {
   var canvasRect = cursorCanvas.getBoundingClientRect();
@@ -182,10 +196,10 @@ cursorCanvas.addEventListener("mousemove", function (event) {
   var canvasMaxY = canvasRect.bottom;
 
   const mouseX = Math.floor(
-    (event.clientX * MAX_WIDTH) / (canvasMaxX - canvasX)
+    (event.clientX * MAX_WIDTH) / (canvasMaxX - canvasX),
   );
   const mouseY = Math.floor(
-    (event.clientY * MAX_HEIGHT) / (canvasMaxY - canvasY)
+    (event.clientY * MAX_HEIGHT) / (canvasMaxY - canvasY),
   );
 
   const context = cursorCanvas.getContext("2d");
@@ -196,7 +210,7 @@ cursorCanvas.addEventListener("mousemove", function (event) {
       MOUSE.x - MOUSE.size / 2,
       MOUSE.y - MOUSE.size / 2,
       MOUSE.size,
-      MOUSE.size
+      MOUSE.size,
     );
 
     // Update mouse position
@@ -229,6 +243,7 @@ function resetGame() {
   start = Date.now();
   velocityFactor = config.defaultVelocity;
   MOUSE.collision = false;
+  lastTimestamp = null; // ← CAMBIO: resetear el timestamp al reiniciar
   requestAnimationFrame(render);
   blocks = [];
   clearCanvas(canvas);
