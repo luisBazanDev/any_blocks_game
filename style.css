@@ -50,6 +50,27 @@ canvas {
   position: relative;
 }
 
+.game-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.game-header h1 {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: #f8fafc;
+  letter-spacing: 1px;
+  margin-bottom: 0.2rem;
+  text-shadow: 0 4px 15px rgba(0,0,0,0.3);
+}
+
+.game-header .author {
+  font-size: 0.9rem;
+  color: #94a3b8;
+  font-weight: 400;
+  letter-spacing: 1px;
+}
+
 .stat-card {
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid rgba(255, 255, 255, 0.08);
@@ -92,6 +113,48 @@ canvas {
   text-shadow: 0 0 15px rgba(56, 189, 248, 0.4);
   font-variant-numeric: tabular-nums;
   letter-spacing: 1px;
+}
+
+.mode-selector {
+  margin-bottom: 1.5rem;
+  text-align: left;
+}
+
+.mode-selector label {
+  display: block;
+  font-size: 0.9rem;
+  color: #94a3b8;
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.mode-options {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.mode-btn {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #94a3b8;
+  padding: 0.8rem;
+  border-radius: 8px;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.mode-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.mode-btn.active {
+  background: rgba(56, 189, 248, 0.2);
+  border-color: #38bdf8;
+  color: #38bdf8;
 }
 
 .reset-btn {

@@ -14,11 +14,25 @@
         <canvas width="1000" height="1000" id="cursor"></canvas>
       </div>
       <div class="statistics">
+        <div class="game-header">
+          <h1>Any Blocks Game</h1>
+          <p class="author">By Luis Bazan</p>
+        </div>
+
         <div class="stat-card">
           <h2 class="stat-title">SURVIVAL TIME</h2>
           <div class="time-display">
             <span id="time">00:00</span>
           </div>
+
+          <div class="mode-selector">
+            <label>Game Mode</label>
+            <div class="mode-options">
+              <button id="mode-classic" class="mode-btn active" onclick="setMode('classic')">Classic</button>
+              <button id="mode-gravity" class="mode-btn" onclick="setMode('gravity')">Gravity</button>
+            </div>
+          </div>
+          
           <button class="reset-btn" onclick="resetGame()">
             <span>Restart Game</span>
           </button>

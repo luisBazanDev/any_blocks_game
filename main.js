@@ -2,6 +2,10 @@ const config = {
   canvas_width: 1000,
   canvas_height: 1000,
   defaultVelocity: 0.06,
+  mode: "classic",
+  difficultyClassic: 1.0,
+  difficultyGravity: 0.8,
+  gravitySpeed: 0.05
 };
 
 const MAX_WIDTH = config.canvas_width;
@@ -14,6 +18,10 @@ const MOUSE = {
   y: MAX_HEIGHT / 2,
   size: 20,
   collision: false,
+};
+const TARGET_MOUSE = {
+  x: MAX_WIDTH / 2,
+  y: MAX_HEIGHT / 2,
 };
 var velocityFactor = config.defaultVelocity;
 
@@ -32,6 +40,7 @@ function clearCanvas(canvas) {
 
 function renderMouse() {
   const context = cursorCanvas.getContext("2d");
+  context.clearRect(0, 0, MAX_WIDTH, MAX_HEIGHT);
   context.fillStyle = MOUSE_FILL;
   context.fillRect(
     MOUSE.x - MOUSE.size / 2,
@@ -155,6 +164,11 @@ function render(timestamp) {
   // Normalizar a factor 1.0 = 60fps
   const dt = deltaMs / 16.67;
 
+  if (config.mode === "gravity" && !MOUSE.collision) {
+    MOUSE.x += (TARGET_MOUSE.x - MOUSE.x) * config.gravitySpeed * dt;
+    MOUSE.y += (TARGET_MOUSE.y - MOUSE.y) * config.gravitySpeed * dt;
+  }
+
   // Render collision blocks logic
   for (let index = 0; index < blocks.length; index++) {
     const collisionBlock = blocks[index];
@@ -205,17 +219,14 @@ cursorCanvas.addEventListener("mousemove", function (event) {
   const context = cursorCanvas.getContext("2d");
 
   if (!MOUSE.collision) {
-    // Clear cursor
-    context.clearRect(
-      MOUSE.x - MOUSE.size / 2,
-      MOUSE.y - MOUSE.size / 2,
-      MOUSE.size,
-      MOUSE.size,
-    );
-
-    // Update mouse position
-    MOUSE.x = mouseX;
-    MOUSE.y = mouseY;
+    // Update target mouse position
+    TARGET_MOUSE.x = mouseX;
+    TARGET_MOUSE.y = mouseY;
+    
+    if (config.mode === "classic") {
+      MOUSE.x = mouseX;
+      MOUSE.y = mouseY;
+    }
   }
 });
 
@@ -225,7 +236,8 @@ setInterval(() => {
   const diferences = now - start;
   const seconds = Math.floor(diferences / 1000);
   const minutes = Math.floor(seconds / 60);
-  velocityFactor = diferences / (1000 * 100); // 100 seconds
+  const difMultiplier = config.mode === "classic" ? config.difficultyClassic : config.difficultyGravity;
+  velocityFactor = (diferences / (1000 * 100)) * difMultiplier; // 100 seconds
   if (!MOUSE.collision) {
     time.innerHTML = `${minutes}m ${seconds % 60}s ${diferences % 1000}ms`;
   } else if (!time.innerHTML.endsWith("restart!")) {
@@ -243,8 +255,19 @@ function resetGame() {
   start = Date.now();
   velocityFactor = config.defaultVelocity;
   MOUSE.collision = false;
+  TARGET_MOUSE.x = MAX_WIDTH / 2;
+  TARGET_MOUSE.y = MAX_HEIGHT / 2;
+  MOUSE.x = MAX_WIDTH / 2;
+  MOUSE.y = MAX_HEIGHT / 2;
   lastTimestamp = null; // ← CAMBIO: resetear el timestamp al reiniciar
   requestAnimationFrame(render);
   blocks = [];
   clearCanvas(canvas);
+}
+
+function setMode(newMode) {
+  config.mode = newMode;
+  document.getElementById("mode-classic").classList.toggle("active", newMode === "classic");
+  document.getElementById("mode-gravity").classList.toggle("active", newMode === "gravity");
+  resetGame();
 }
