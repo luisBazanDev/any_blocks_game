@@ -202,7 +202,7 @@ function render(timestamp) {
 // ← CAMBIO: arrancar con requestAnimationFrame para recibir el timestamp
 requestAnimationFrame(render);
 
-cursorCanvas.addEventListener("mousemove", function (event) {
+function handleInput(clientX, clientY) {
   var canvasRect = cursorCanvas.getBoundingClientRect();
   var canvasX = canvasRect.left;
   var canvasMaxX = canvasRect.right;
@@ -210,16 +210,13 @@ cursorCanvas.addEventListener("mousemove", function (event) {
   var canvasMaxY = canvasRect.bottom;
 
   const mouseX = Math.floor(
-    (event.clientX * MAX_WIDTH) / (canvasMaxX - canvasX),
+    ((clientX - canvasX) * MAX_WIDTH) / (canvasMaxX - canvasX)
   );
   const mouseY = Math.floor(
-    (event.clientY * MAX_HEIGHT) / (canvasMaxY - canvasY),
+    ((clientY - canvasY) * MAX_HEIGHT) / (canvasMaxY - canvasY)
   );
 
-  const context = cursorCanvas.getContext("2d");
-
   if (!MOUSE.collision) {
-    // Update target mouse position
     TARGET_MOUSE.x = mouseX;
     TARGET_MOUSE.y = mouseY;
     
@@ -228,7 +225,29 @@ cursorCanvas.addEventListener("mousemove", function (event) {
       MOUSE.y = mouseY;
     }
   }
+}
+
+cursorCanvas.addEventListener("mousemove", function (event) {
+  handleInput(event.clientX, event.clientY);
 });
+
+cursorCanvas.addEventListener("touchmove", function (event) {
+  event.preventDefault(); 
+  if (event.touches.length > 0) {
+    handleInput(event.touches[0].clientX, event.touches[0].clientY);
+  }
+}, { passive: false });
+
+cursorCanvas.addEventListener("touchstart", function (event) {
+  if (MOUSE.collision) {
+    resetGame();
+  } else {
+    // Move slightly instantly to where the touch started
+    if (event.touches.length > 0) {
+      handleInput(event.touches[0].clientX, event.touches[0].clientY);
+    }
+  }
+}, { passive: false });
 
 setInterval(() => {
   const time = document.getElementById("time");

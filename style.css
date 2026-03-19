@@ -25,6 +25,7 @@ body {
   background-color: #0f172a;
   box-shadow: 10px 0 30px rgba(0, 0, 0, 0.5);
   z-index: 10;
+  touch-action: none;
 }
 
 canvas {
@@ -220,11 +221,19 @@ canvas {
     padding: 1.5rem;
     justify-content: flex-start;
   }
+  .game-header h1 {
+    font-size: 1.8rem;
+  }
   .stat-card {
-    padding: 2rem 1.5rem;
+    padding: 1.8rem 1.2rem;
     margin-bottom: 1rem;
   }
   #time {
-    font-size: 2rem;
+    font-size: 1.8rem;
+  }
+  .time-display {
+    min-height: 80px;
+    padding: 1rem;
+    margin-bottom: 2rem;
   }
 }
