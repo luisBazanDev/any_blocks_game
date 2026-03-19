@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Any blocks Game</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="./style.css" />
   </head>
   <body>
@@ -13,9 +14,20 @@
         <canvas width="1000" height="1000" id="cursor"></canvas>
       </div>
       <div class="statistics">
-        <h2>Time</h2>
-        <span id="time">00:00</span>
-        <button onclick="resetGame()">Reset</button>
+        <div class="stat-card">
+          <h2 class="stat-title">SURVIVAL TIME</h2>
+          <div class="time-display">
+            <span id="time">00:00</span>
+          </div>
+          <button class="reset-btn" onclick="resetGame()">
+            <span>Restart Game</span>
+          </button>
+        </div>
+        
+        <div class="instructions">
+          <h3>How to play</h3>
+          <p>Dodge the moving blocks with your mouse. Don't let them hit you!</p>
+        </div>
       </div>
     </div>
     <script src="./main.js"></script>

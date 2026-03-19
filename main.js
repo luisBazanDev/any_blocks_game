@@ -6,8 +6,8 @@ const config = {
 
 const MAX_WIDTH = config.canvas_width;
 const MAX_HEIGHT = config.canvas_height;
-const BASE_FILL = "rgb(200, 200, 200)";
-const MOUSE_FILL = "rgb(255,0,0)";
+const BASE_FILL = "#0f172a";
+const MOUSE_FILL = "#38bdf8";
 var start = new Date().getTime();
 const MOUSE = {
   x: MAX_WIDTH / 2,
@@ -48,7 +48,7 @@ function gameOver(collisionBlock) {
     const collisionBlock = blocks[index];
     collisionBlock.drawInCanvas(canvas);
   }
-  collisionBlock.drawInCanvas(canvas, "rgb(0,0,255)");
+  collisionBlock.drawInCanvas(canvas, "#f8fafc");
 }
 
 function isCollision(collisionBlock) {
@@ -106,7 +106,7 @@ class CollisionBlock {
 
   drawInCanvas(canvas, fillStyle) {
     const context = canvas.getContext("2d");
-    context.fillStyle = fillStyle ? fillStyle : "rgb(0, 0, 0)";
+    context.fillStyle = fillStyle ? fillStyle : "#f43f5e";
     const drawX = this.x - this.size / 2;
     const drawY = this.y - this.size / 2;
     context.fillRect(drawX, drawY, this.size, this.size);
